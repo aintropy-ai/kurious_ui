@@ -30,7 +30,7 @@ export default function AnswerBlock({ conversation, isLatest }) {
             ? 'border-k-cyan/40 text-k-cyan'
             : 'border-purple-400/40 text-purple-400'
         }`}>
-          {mode === 'quick' ? '⚡ Quick' : '🔍 Think Deeper'}
+          {mode === 'quick' ? '⚡ Quick' : '🔍 Deep Dive'}
         </span>
       </div>
 

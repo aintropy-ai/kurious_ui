@@ -150,7 +150,7 @@ function SearchBar({ value, onChange, onSubmit, mode, onModeChange, disabled }) 
           onClick={() => onModeChange('deeper')}
           className={`text-xs font-medium transition-colors ${mode === 'deeper' ? 'text-purple-400' : 'text-k-muted hover:text-k-text'}`}
         >
-          🔍 Think Deeper
+          🔍 Deep Dive
         </button>
       </div>
     </div>
