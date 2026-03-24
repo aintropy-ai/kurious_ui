@@ -16,11 +16,7 @@ function NavLogo({ onClick }) {
         alt="AIntropy"
         className="w-8 h-8 rounded-lg object-cover mix-blend-lighten"
       />
-      <span className="font-bold text-[15px] tracking-tight">
-        <span className="text-k-cyan">AI</span><span className="text-k-text">ntropy</span>
-      </span>
-      <span className="text-k-border text-sm mx-1">·</span>
-      <span className="text-k-text font-semibold text-sm">Kurious</span>
+      <span className="font-bold text-[15px] tracking-tight text-k-text">Kurious</span>
     </button>
   )
 }
