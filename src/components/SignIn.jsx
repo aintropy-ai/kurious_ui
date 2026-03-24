@@ -143,7 +143,7 @@ export default function SignIn({ onSignIn }) {
         </div>
 
         <p className="text-center text-xs text-k-muted/50 mt-6">
-          Enterprise access only · <span className="text-k-muted">aintropy.ai</span>
+          Organization's Name.INC
         </p>
       </div>
     </div>
