@@ -17,7 +17,7 @@ function ThreeDotMenu({ onRename, onMembers, onDelete }) {
     <div className="relative" ref={ref}>
       <button
         onClick={e => { e.stopPropagation(); setOpen(!open) }}
-        className="p-1 rounded text-k-muted hover:text-k-text hover:bg-k-border transition-colors opacity-0 group-hover:opacity-100"
+        className="p-1 rounded text-k-muted hover:text-k-text hover:bg-k-border transition-colors opacity-30 group-hover:opacity-100"
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <circle cx="7" cy="3" r="1" fill="currentColor"/>
@@ -50,7 +50,7 @@ function ChatThreeDotMenu({ onRename, onDelete }) {
     <div className="relative" ref={ref}>
       <button
         onClick={e => { e.stopPropagation(); setOpen(!open) }}
-        className="p-1 rounded text-k-muted hover:text-k-text hover:bg-k-border transition-colors opacity-0 group-hover:opacity-100"
+        className="p-1 rounded text-k-muted hover:text-k-text hover:bg-k-border transition-colors opacity-30 group-hover:opacity-100"
       >
         <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
           <circle cx="7" cy="3" r="1" fill="currentColor"/>
@@ -68,13 +68,18 @@ function ChatThreeDotMenu({ onRename, onDelete }) {
   )
 }
 
-export default function ProjectsSidebar({ activeProjectId, onProjectSelect, onNewProject }) {
+export default function ProjectsSidebar({ activeProjectId, onProjectSelect, onNewProject, demoRole = 'Admin' }) {
   const [projects, setProjects] = useState(MOCK_PROJECTS)
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [confirmChatDelete, setConfirmChatDelete] = useState(null)
   const [membersProject, setMembersProject] = useState(null)
   const [renamingId, setRenamingId] = useState(null)
   const [renameValue, setRenameValue] = useState('')
+  const [search, setSearch] = useState('')
+
+  const filteredProjects = search.trim()
+    ? projects.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+    : projects
 
   const handleDeleteProject = (id) => {
     setProjects(prev => prev.filter(p => p.id !== id))
@@ -109,24 +114,43 @@ export default function ProjectsSidebar({ activeProjectId, onProjectSelect, onNe
     <>
       <div className="fixed left-0 top-14 bottom-0 w-64 bg-k-nav border-r border-k-border flex flex-col overflow-hidden z-10">
 
-        {/* New Project */}
-        <div className="p-4 border-b border-k-border">
+        {/* New Project + Search */}
+        <div className="px-4 pt-4 pb-3 space-y-3">
           <button
             onClick={onNewProject}
-            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-k-border text-sm text-k-muted hover:text-k-text hover:border-k-cyan/50 hover:bg-k-card transition-all"
+            className="flex items-center gap-1.5 text-sm text-k-muted hover:text-k-cyan transition-colors"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
               <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             New Project
           </button>
+          <div className="h-px bg-k-border" />
+          <div className="relative">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-k-muted pointer-events-none">
+              <circle cx="6" cy="6" r="4" stroke="currentColor" strokeWidth="1.2"/>
+              <path d="M10 10l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search projects..."
+              className="w-full bg-k-bg border border-k-border rounded-lg pl-7 pr-3 py-1.5 text-xs text-k-text placeholder-k-muted/50 focus:outline-none focus:border-k-cyan transition-colors"
+            />
+          </div>
+          <div className="h-px bg-k-border" />
         </div>
 
         {/* Projects list */}
         <div className="flex-1 overflow-y-auto py-2">
           <p className="text-xs text-k-muted/60 uppercase tracking-wider px-4 py-1 mb-1">Your Projects</p>
 
-          {projects.map(project => (
+          {filteredProjects.length === 0 && (
+            <p className="text-xs text-k-muted/60 px-4 py-2">No projects found.</p>
+          )}
+
+          {filteredProjects.map(project => (
             <div key={project.id}>
               {/* Project row */}
               <div
@@ -207,6 +231,7 @@ export default function ProjectsSidebar({ activeProjectId, onProjectSelect, onNe
       {membersProject && (
         <MembersPanel
           project={membersProject}
+          demoRole={demoRole}
           onClose={() => setMembersProject(null)}
         />
       )}

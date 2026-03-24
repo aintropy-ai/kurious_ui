@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 
 function AIntropyLogo({ size = 'lg' }) {
-  const logoSize = size === 'lg' ? 'w-10 h-10 text-lg' : 'w-7 h-7 text-sm'
+  const logoSize = size === 'lg' ? 'w-12 h-12' : 'w-8 h-8'
   const textSize = size === 'lg' ? 'text-2xl' : 'text-base'
 
   return (
     <div className="flex items-center gap-3">
-      <div className={`${logoSize} rounded-xl bg-gradient-to-br from-k-cyan to-k-teal flex items-center justify-center flex-shrink-0`}>
-        <span className="text-k-bg font-bold">A</span>
-      </div>
+      <img
+        src="./logo.png"
+        alt="AIntropy"
+        className={`${logoSize} rounded-xl object-cover mix-blend-lighten`}
+      />
       <div className={`${textSize} font-bold tracking-tight`}>
         <span className="text-k-cyan">AI</span><span className="text-k-text">ntropy</span>
       </div>

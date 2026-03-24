@@ -16,7 +16,7 @@ function ThreeDotMenu({ onRename, onDelete }) {
     <div className="relative" ref={ref}>
       <button
         onClick={e => { e.stopPropagation(); setOpen(!open) }}
-        className="p-1 rounded text-k-muted hover:text-k-text hover:bg-k-border transition-colors opacity-0 group-hover:opacity-100"
+        className="p-1 rounded text-k-muted hover:text-k-text hover:bg-k-border transition-colors opacity-30 group-hover:opacity-100"
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <circle cx="7" cy="3" r="1" fill="currentColor"/>
@@ -49,8 +49,12 @@ export default function ChatHistorySidebar({ activeChatId, onChatSelect, onNewCh
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [renamingId, setRenamingId] = useState(null)
   const [renameValue, setRenameValue] = useState('')
+  const [search, setSearch] = useState('')
 
   const groups = ['Today', 'Yesterday', 'Last 7 Days']
+  const filteredChats = search.trim()
+    ? chats.filter(c => c.title.toLowerCase().includes(search.toLowerCase()))
+    : chats
 
   const handleDelete = (id) => {
     setChats(prev => prev.filter(c => c.id !== id))
@@ -74,23 +78,59 @@ export default function ChatHistorySidebar({ activeChatId, onChatSelect, onNewCh
     <>
       <div className="fixed left-0 top-14 bottom-0 w-64 bg-k-nav border-r border-k-border flex flex-col overflow-hidden z-10">
 
-        {/* New Chat */}
-        <div className="p-4 border-b border-k-border">
+        {/* New Chat + Search */}
+        <div className="px-4 pt-4 pb-3 space-y-3">
           <button
             onClick={onNewChat}
-            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-k-border text-sm text-k-muted hover:text-k-text hover:border-k-cyan/50 hover:bg-k-card transition-all"
+            className="flex items-center gap-1.5 text-sm text-k-muted hover:text-k-cyan transition-colors"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
               <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             New Chat
           </button>
+          <div className="h-px bg-k-border" />
+          <div className="relative">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-k-muted pointer-events-none">
+              <circle cx="6" cy="6" r="4" stroke="currentColor" strokeWidth="1.2"/>
+              <path d="M10 10l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search chats..."
+              className="w-full bg-k-bg border border-k-border rounded-lg pl-7 pr-3 py-1.5 text-xs text-k-text placeholder-k-muted/50 focus:outline-none focus:border-k-cyan transition-colors"
+            />
+          </div>
+          <div className="h-px bg-k-border" />
         </div>
 
         {/* Chat list */}
         <div className="flex-1 overflow-y-auto py-2">
+          {search.trim() ? (
+            filteredChats.length > 0 ? (
+              <div className="mb-4">
+                {filteredChats.map(chat => (
+                  <div
+                    key={chat.id}
+                    onClick={() => onChatSelect(chat.id)}
+                    className={`group flex items-center gap-2 px-4 py-2 cursor-pointer transition-colors ${
+                      activeChatId === chat.id ? 'bg-k-card text-k-text' : 'text-k-muted hover:bg-k-card/50 hover:text-k-text'
+                    }`}
+                  >
+                    <span className="flex-1 text-sm truncate">{chat.title}</span>
+                    <ThreeDotMenu onRename={() => handleRename(chat)} onDelete={() => setConfirmDelete(chat)} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-k-muted/60 px-4 py-2">No chats found.</p>
+            )
+          ) : (
+          <>
           {groups.map(group => {
-            const groupChats = chats.filter(c => c.group === group)
+            const groupChats = filteredChats.filter(c => c.group === group)
             if (groupChats.length === 0) return null
             return (
               <div key={group} className="mb-4">
@@ -125,6 +165,8 @@ export default function ChatHistorySidebar({ activeChatId, onChatSelect, onNewCh
               </div>
             )
           })}
+          </>
+          )}
         </div>
       </div>
 

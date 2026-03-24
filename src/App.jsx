@@ -11,9 +11,11 @@ import { MOCK_QA, INITIAL_SUGGESTIONS, MOCK_PROJECTS, getAnswerForQuestion } fro
 function NavLogo({ onClick }) {
   return (
     <button onClick={onClick} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity flex-shrink-0">
-      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-k-cyan to-k-teal flex items-center justify-center">
-        <span className="text-k-bg text-sm font-bold leading-none">A</span>
-      </div>
+      <img
+        src="./logo.png"
+        alt="AIntropy"
+        className="w-8 h-8 rounded-lg object-cover mix-blend-lighten"
+      />
       <span className="font-bold text-[15px] tracking-tight">
         <span className="text-k-cyan">AI</span><span className="text-k-text">ntropy</span>
       </span>
@@ -290,6 +292,7 @@ export default function App() {
   const [askedQuestions, setAskedQuestions]     = useState(new Set())
   const [latestSuggestions, setLatestSuggestions] = useState([])
   const [membersProject, setMembersProject]     = useState(null)
+  const [demoRole, setDemoRole]                 = useState('Admin')
 
   const activeProject = MOCK_PROJECTS.find(p => p.id === activeProjectId) || null
 
@@ -376,20 +379,17 @@ export default function App() {
 
         {/* Right: demo toggle + org + profile */}
         <div className="flex items-center gap-4">
-          <span className="text-xs text-k-muted/40 hidden sm:block">(for demo only)</span>
-          <div className="flex items-center gap-1 bg-k-card border border-k-border rounded-lg px-2 py-1">
-            <button
-              onClick={() => setIsFirstVisit(true)}
-              className={`text-xs px-2 py-0.5 rounded transition-colors ${isFirstVisit ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}
-            >
-              First Visit
-            </button>
-            <button
-              onClick={() => setIsFirstVisit(false)}
-              className={`text-xs px-2 py-0.5 rounded transition-colors ${!isFirstVisit ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}
-            >
-              Returning
-            </button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-k-muted/40 hidden sm:block">(for demo only)</span>
+            <div className="flex items-center gap-1 bg-k-card border border-k-border rounded-lg px-2 py-1">
+              <button onClick={() => setIsFirstVisit(true)} className={`text-xs px-2 py-0.5 rounded transition-colors ${isFirstVisit ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}>First Visit</button>
+              <button onClick={() => setIsFirstVisit(false)} className={`text-xs px-2 py-0.5 rounded transition-colors ${!isFirstVisit ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}>Returning</button>
+            </div>
+            <div className="flex items-center gap-1 bg-k-card border border-k-border rounded-lg px-2 py-1">
+              {['Admin', 'Contributor', 'Viewer'].map(r => (
+                <button key={r} onClick={() => setDemoRole(r)} className={`text-xs px-2 py-0.5 rounded transition-colors ${demoRole === r ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}>{r}</button>
+              ))}
+            </div>
           </div>
           <span className="text-xs text-k-muted hidden sm:block">Organization's Name.INC</span>
           <ProfileMenu onSignOut={handleSignOut} />
@@ -412,6 +412,7 @@ export default function App() {
             activeProjectId={activeProjectId}
             onProjectSelect={(id) => { setActiveProjectId(id); handleReset() }}
             onNewProject={() => {}}
+            demoRole={demoRole}
           />
         )}
 

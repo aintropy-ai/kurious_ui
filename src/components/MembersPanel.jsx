@@ -21,12 +21,11 @@ function RoleBadge({ role }) {
   )
 }
 
-export default function MembersPanel({ project, onClose }) {
+export default function MembersPanel({ project, demoRole = 'Admin', onClose }) {
   const [members, setMembers] = useState(project.members)
   const [addEmail, setAddEmail] = useState('')
   const [addRole, setAddRole] = useState('Contributor')
   const [addError, setAddError] = useState('')
-  const [demoRole, setDemoRole] = useState('Admin') // demo switcher
 
   const isAdmin = demoRole === 'Admin'
 
@@ -67,25 +66,6 @@ export default function MembersPanel({ project, onClose }) {
               <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </button>
-        </div>
-
-        {/* Demo role switcher */}
-        <div className="flex items-center gap-3 px-6 py-2.5 bg-k-bg/60 border-b border-k-border">
-          <span className="text-xs text-k-muted/50">Viewing as:</span>
-          <div className="flex items-center gap-1">
-            {['Admin', 'Contributor', 'Viewer'].map(r => (
-              <button
-                key={r}
-                onClick={() => setDemoRole(r)}
-                className={`text-xs px-2.5 py-1 rounded-lg transition-colors font-medium ${
-                  demoRole === r ? 'bg-k-cyan text-k-bg' : 'text-k-muted hover:text-k-text hover:bg-k-card'
-                }`}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-          <span className="text-xs text-k-muted/40 ml-auto">(for demo only)</span>
         </div>
 
         {/* Non-admin notice */}
