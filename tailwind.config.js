@@ -4,14 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        'k-bg':     '#0D0D0D',
-        'k-nav':    '#111111',
-        'k-card':   '#1A1A1A',
-        'k-border': '#2A2A2A',
+        'k-bg':     'var(--k-bg)',
+        'k-nav':    'var(--k-nav)',
+        'k-card':   'var(--k-card)',
+        'k-border': 'var(--k-border)',
         'k-cyan':   '#00D4FF',
         'k-teal':   '#0891B2',
-        'k-text':   '#FFFFFF',
-        'k-muted':  '#A0A0A0',
+        'k-text':   'var(--k-text)',
+        'k-muted':  'var(--k-muted)',
         'k-error':  '#EF4444',
       },
       fontFamily: {

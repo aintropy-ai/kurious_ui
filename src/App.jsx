@@ -22,7 +22,7 @@ function NavLogo({ onClick }) {
 }
 
 // ─── Profile Dropdown ─────────────────────────────────────────────────────────
-function ProfileMenu({ onSignOut }) {
+function ProfileMenu({ onSignOut, theme, onThemeChange }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -50,6 +50,30 @@ function ProfileMenu({ onSignOut }) {
             <p className="text-xs text-k-muted mt-0.5">kunal@aintropy.ai</p>
             <p className="text-xs text-k-muted/60 mt-0.5">Organization's Name.INC</p>
           </div>
+
+          {/* Theme toggle */}
+          <div className="px-4 py-3 border-b border-k-border">
+            <p className="text-xs text-k-muted mb-2">Theme</p>
+            <div className="flex items-center gap-1 bg-k-bg border border-k-border rounded-lg p-1">
+              <button
+                onClick={() => onThemeChange('light')}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  theme === 'light' ? 'bg-k-card text-k-text shadow-sm' : 'text-k-muted hover:text-k-text'
+                }`}
+              >
+                ☀️ Light
+              </button>
+              <button
+                onClick={() => onThemeChange('dark')}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  theme === 'dark' ? 'bg-k-card text-k-text shadow-sm' : 'text-k-muted hover:text-k-text'
+                }`}
+              >
+                🌙 Dark
+              </button>
+            </div>
+          </div>
+
           <div className="py-1">
             <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-k-muted hover:text-k-text hover:bg-k-bg transition-colors">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.2"/><path d="M2 12c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
@@ -274,6 +298,17 @@ function ConversationScreen({ conversations, inputValue, onInputChange, onSubmit
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('k-theme') || 'dark')
+
+  useEffect(() => {
+    localStorage.setItem('k-theme', theme)
+    if (theme === 'light') {
+      document.documentElement.classList.add('light')
+    } else {
+      document.documentElement.classList.remove('light')
+    }
+  }, [theme])
+
   const [isSignedIn, setIsSignedIn]             = useState(false)
   const [view, setView]                         = useState('myChats') // 'myChats' | 'projects'
   const [activeProjectId, setActiveProjectId]   = useState(null)
@@ -351,9 +386,9 @@ export default function App() {
       <nav className="fixed top-0 left-0 right-0 z-30 bg-k-nav border-b border-k-border px-6 h-14 flex items-center justify-between">
 
         {/* Left: logo + nav links */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-10">
           <NavLogo onClick={handleReset} />
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => handleViewChange('myChats')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
@@ -388,7 +423,7 @@ export default function App() {
             </div>
           </div>
           <span className="text-xs text-k-muted hidden sm:block">Organization's Name.INC</span>
-          <ProfileMenu onSignOut={handleSignOut} />
+          <ProfileMenu onSignOut={handleSignOut} theme={theme} onThemeChange={setTheme} />
         </div>
       </nav>
 
