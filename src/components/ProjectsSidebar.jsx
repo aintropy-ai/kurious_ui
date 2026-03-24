@@ -136,7 +136,7 @@ export default function ProjectsSidebar({ activeProjectId, onProjectSelect, onNe
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search projects..."
-              className="w-full bg-k-bg border border-k-border rounded-lg pl-7 pr-3 py-1.5 text-xs text-k-text placeholder-k-muted/50 focus:outline-none focus:border-k-cyan transition-colors"
+              className="w-full bg-k-card border border-k-border rounded-lg pl-7 pr-3 py-2 text-xs text-k-text placeholder-k-muted focus:outline-none focus:border-k-cyan transition-colors"
             />
           </div>
           <div className="h-px bg-k-border" />
