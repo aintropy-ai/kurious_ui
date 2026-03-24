@@ -9,7 +9,7 @@ function AIntropyLogo({ size = 'lg' }) {
       <img
         src="./logo.png"
         alt="AIntropy"
-        className={`${logoSize} rounded-xl object-cover mix-blend-lighten`}
+        className={`${logoSize} rounded-xl object-cover`}
       />
       <div className={`${textSize} font-bold tracking-tight`}>
         <span className="text-k-cyan">AI</span><span className="text-k-text">ntropy</span>

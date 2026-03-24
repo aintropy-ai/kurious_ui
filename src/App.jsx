@@ -8,13 +8,13 @@ import ProjectsSidebar from './components/ProjectsSidebar'
 import { MOCK_QA, INITIAL_SUGGESTIONS, MOCK_PROJECTS, getAnswerForQuestion } from './data/mockData'
 
 // ─── Nav Logo ─────────────────────────────────────────────────────────────────
-function NavLogo({ onClick }) {
+function NavLogo({ onClick, theme }) {
   return (
     <button onClick={onClick} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity flex-shrink-0">
       <img
         src="./logo.png"
         alt="AIntropy"
-        className="w-8 h-8 rounded-lg object-cover mix-blend-lighten"
+        className={`w-8 h-8 rounded-lg object-cover ${theme === 'light' ? '' : 'mix-blend-lighten'}`}
       />
       <span className="font-bold text-[15px] tracking-tight text-k-text">Kurious</span>
     </button>
@@ -387,7 +387,7 @@ export default function App() {
 
         {/* Left: logo + nav links */}
         <div className="flex items-center gap-10">
-          <NavLogo onClick={handleReset} />
+          <NavLogo onClick={handleReset} theme={theme} />
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleViewChange('myChats')}
