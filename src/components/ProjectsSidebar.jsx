@@ -3,9 +3,10 @@ import { MOCK_PROJECTS } from '../data/mockData'
 import ConfirmModal from './ConfirmModal'
 import MembersPanel from './MembersPanel'
 
-function ThreeDotMenu({ onRename, onMembers, onDelete, isAdmin }) {
+function ThreeDotMenu({ onRename, onMembers, onDelete, demoRole }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
+  const admin = demoRole === 'Admin'
 
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
@@ -26,13 +27,12 @@ function ThreeDotMenu({ onRename, onMembers, onDelete, isAdmin }) {
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-7 w-40 bg-k-card border border-k-border rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in">
-          {isAdmin && <button onClick={e => { e.stopPropagation(); setOpen(false); onRename() }} className="w-full text-left px-3 py-2 text-sm text-k-muted hover:text-k-text hover:bg-k-bg transition-colors">Rename</button>}
-          {isAdmin
-            ? <button onClick={e => { e.stopPropagation(); setOpen(false); onMembers() }} className="w-full text-left px-3 py-2 text-sm text-k-muted hover:text-k-text hover:bg-k-bg transition-colors">Manage Members</button>
-            : <button onClick={e => { e.stopPropagation(); setOpen(false); onMembers() }} className="w-full text-left px-3 py-2 text-sm text-k-muted hover:text-k-text hover:bg-k-bg transition-colors">View Members</button>
-          }
-          {isAdmin && <button onClick={e => { e.stopPropagation(); setOpen(false); onDelete() }} className="w-full text-left px-3 py-2 text-sm text-k-error hover:bg-k-error/10 transition-colors">Delete Project</button>}
+        <div className="absolute right-0 top-7 w-44 bg-k-card border border-k-border rounded-xl shadow-xl z-50 overflow-hidden animate-fade-in">
+          {admin && <button onClick={e => { e.stopPropagation(); setOpen(false); onRename() }} className="w-full text-left px-3 py-2 text-sm text-k-muted hover:text-k-text hover:bg-k-bg transition-colors">Rename</button>}
+          <button onClick={e => { e.stopPropagation(); setOpen(false); onMembers() }} className="w-full text-left px-3 py-2 text-sm text-k-muted hover:text-k-text hover:bg-k-bg transition-colors">
+            {admin ? 'Manage Members' : 'View Members'}
+          </button>
+          {admin && <button onClick={e => { e.stopPropagation(); setOpen(false); onDelete() }} className="w-full text-left px-3 py-2 text-sm text-k-error hover:bg-k-error/10 transition-colors">Delete Project</button>}
         </div>
       )}
     </div>
@@ -183,7 +183,7 @@ export default function ProjectsSidebar({ activeProjectId, onProjectSelect, onNe
                 )}
 
                 <ThreeDotMenu
-                  isAdmin={demoRole === 'Admin'}
+                  demoRole={demoRole}
                   onRename={() => handleRenameProject(project)}
                   onMembers={() => setMembersProject(project)}
                   onDelete={() => setConfirmDelete(project)}
