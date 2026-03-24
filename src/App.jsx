@@ -2,7 +2,80 @@ import React, { useState, useRef, useEffect } from 'react'
 import ThinkingState from './components/ThinkingState'
 import AnswerBlock from './components/AnswerBlock'
 import SuggestionCards from './components/SuggestionCards'
-import { MOCK_QA, INITIAL_SUGGESTIONS, getAnswerForQuestion } from './data/mockData'
+import SignIn from './components/SignIn'
+import ChatHistorySidebar from './components/ChatHistorySidebar'
+import ProjectsSidebar from './components/ProjectsSidebar'
+import { MOCK_QA, INITIAL_SUGGESTIONS, MOCK_PROJECTS, getAnswerForQuestion } from './data/mockData'
+
+// ─── Nav Logo ─────────────────────────────────────────────────────────────────
+function NavLogo({ onClick }) {
+  return (
+    <button onClick={onClick} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity flex-shrink-0">
+      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-k-cyan to-k-teal flex items-center justify-center">
+        <span className="text-k-bg text-sm font-bold leading-none">A</span>
+      </div>
+      <span className="font-bold text-[15px] tracking-tight">
+        <span className="text-k-cyan">AI</span><span className="text-k-text">ntropy</span>
+      </span>
+      <span className="text-k-border text-sm mx-1">·</span>
+      <span className="text-k-text font-semibold text-sm">Kurious</span>
+    </button>
+  )
+}
+
+// ─── Profile Dropdown ─────────────────────────────────────────────────────────
+function ProfileMenu({ onSignOut }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className={`w-8 h-8 rounded-full bg-gradient-to-br from-k-cyan to-k-teal flex items-center justify-center text-k-bg text-sm font-bold transition-all ${
+          open ? 'ring-2 ring-k-cyan ring-offset-2 ring-offset-k-nav' : 'hover:ring-2 hover:ring-k-cyan/40 hover:ring-offset-1 hover:ring-offset-k-nav'
+        }`}
+      >
+        K
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-10 w-56 bg-k-card border border-k-border rounded-xl shadow-xl overflow-hidden z-50 animate-fade-in">
+          <div className="px-4 py-3 border-b border-k-border">
+            <p className="text-sm font-semibold text-k-text">Kunal Sawarkar</p>
+            <p className="text-xs text-k-muted mt-0.5">kunal@aintropy.ai</p>
+            <p className="text-xs text-k-muted/60 mt-0.5">Organization's Name.INC</p>
+          </div>
+          <div className="py-1">
+            <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-k-muted hover:text-k-text hover:bg-k-bg transition-colors">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.2"/><path d="M2 12c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              Account Settings
+            </button>
+            <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-k-muted hover:text-k-text hover:bg-k-bg transition-colors">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M7 4.5v3l1.5 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              Help & Support
+            </button>
+          </div>
+          <div className="border-t border-k-border py-1">
+            <button
+              onClick={() => { setOpen(false); onSignOut() }}
+              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-k-error hover:bg-k-error/10 transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 7h6M8.5 5L11 7l-2.5 2M8 2H3a1 1 0 00-1 1v8a1 1 0 001 1h5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── Search Bar ───────────────────────────────────────────────────────────────
 function SearchBar({ value, onChange, onSubmit, mode, onModeChange, disabled }) {
@@ -43,23 +116,17 @@ function SearchBar({ value, onChange, onSubmit, mode, onModeChange, disabled }) 
           </svg>
         </button>
       </div>
-
-      {/* Mode toggle */}
       <div className="flex items-center gap-4 mt-2 ml-1">
         <button
           onClick={() => onModeChange('quick')}
-          className={`text-xs font-medium transition-colors flex items-center gap-1 ${
-            mode === 'quick' ? 'text-k-cyan' : 'text-k-muted hover:text-k-text'
-          }`}
+          className={`text-xs font-medium transition-colors ${mode === 'quick' ? 'text-k-cyan' : 'text-k-muted hover:text-k-text'}`}
         >
           ⚡ Quick
         </button>
         <span className="text-k-border text-xs">·</span>
         <button
           onClick={() => onModeChange('deeper')}
-          className={`text-xs font-medium transition-colors flex items-center gap-1 ${
-            mode === 'deeper' ? 'text-purple-400' : 'text-k-muted hover:text-k-text'
-          }`}
+          className={`text-xs font-medium transition-colors ${mode === 'deeper' ? 'text-purple-400' : 'text-k-muted hover:text-k-text'}`}
         >
           🔍 Think Deeper
         </button>
@@ -68,26 +135,71 @@ function SearchBar({ value, onChange, onSubmit, mode, onModeChange, disabled }) 
   )
 }
 
-// ─── Idle Screen ──────────────────────────────────────────────────────────────
-function IdleScreen({ isFirstVisit, inputValue, onInputChange, onSubmit, mode, onModeChange, onSuggestionSelect }) {
-  const isTyping = inputValue.length > 0
-  const idleSuggestions = INITIAL_SUGGESTIONS.slice(0, 2)
-
-  // Related suggestions while typing (not idle cards)
-  const typingSuggestions = MOCK_QA
-    .filter(q => !idleSuggestions.includes(q.question))
-    .slice(0, 3)
-    .map(q => q.question)
+// ─── Project Header (shown in center when a project is active) ────────────────
+function ProjectHeader({ project, onManageMembers }) {
+  const [showMembers, setShowMembers] = useState(false)
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6 pb-20">
-      <div className="w-full max-w-2xl">
+    <div className="mb-8 pb-6 border-b border-k-border">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-xl font-bold text-k-text">{project.name}</h2>
+        <button
+          onClick={() => setShowMembers(!showMembers)}
+          className="flex items-center gap-2 text-xs text-k-muted hover:text-k-cyan transition-colors border border-k-border rounded-lg px-3 py-1.5 hover:border-k-cyan/50"
+        >
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="4.5" r="2" stroke="currentColor" strokeWidth="1.2"/><path d="M1 11c0-2.21 1.79-4 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><circle cx="10" cy="4.5" r="2" stroke="currentColor" strokeWidth="1.2"/><path d="M7 11c0-2.21 1.79-4 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+          {project.memberCount} members
+        </button>
+      </div>
+      <p className="text-sm text-k-muted">{project.chatCount} chats · Last active {project.lastActive}</p>
 
-        {/* Greeting — scrolls up when typing */}
+      {/* Inline members summary */}
+      {showMembers && (
+        <div className="mt-4 p-4 bg-k-card border border-k-border rounded-xl animate-fade-in">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-medium text-k-muted uppercase tracking-wider">Members</p>
+            <button
+              onClick={onManageMembers}
+              className="text-xs text-k-cyan hover:text-cyan-300 transition-colors"
+            >
+              Manage →
+            </button>
+          </div>
+          <div className="space-y-2">
+            {project.members.map(m => (
+              <div key={m.id} className="flex items-center gap-3">
+                <div className="w-6 h-6 rounded-full bg-k-cyan/20 border border-k-border flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs text-k-cyan font-medium">{m.name.charAt(0)}</span>
+                </div>
+                <span className="text-sm text-k-text flex-1">{m.name}</span>
+                <span className={`text-xs ${m.role === 'Admin' ? 'text-k-cyan' : m.role === 'Contributor' ? 'text-purple-400' : 'text-k-muted'}`}>{m.role}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Idle Screen ──────────────────────────────────────────────────────────────
+function IdleScreen({ isFirstVisit, inputValue, onInputChange, onSubmit, mode, onModeChange, onSuggestionSelect, projectName }) {
+  const isTyping = inputValue.length > 0
+  const idleSuggestions = INITIAL_SUGGESTIONS.slice(0, 2)
+  const typingSuggestions = MOCK_QA.filter(q => !idleSuggestions.includes(q.question)).slice(0, 3).map(q => q.question)
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-3.5rem)] px-6 pb-20">
+      <div className="w-full max-w-2xl">
         <div className={`transition-all duration-300 text-center mb-10 ${
           isTyping ? 'opacity-0 -translate-y-8 pointer-events-none h-0 mb-0 overflow-hidden' : 'opacity-100 translate-y-0'
         }`}>
-          {isFirstVisit ? (
+          {projectName ? (
+            <>
+              <h1 className="text-3xl font-bold text-k-text mb-2">Welcome back, Kunal.</h1>
+              <p className="text-k-muted text-lg">Searching within <span className="text-k-cyan">{projectName}</span> — what do you want to know?</p>
+            </>
+          ) : isFirstVisit ? (
             <>
               <h1 className="text-3xl font-bold text-k-text mb-2">Welcome to Kurious, Kunal.</h1>
               <p className="text-k-muted text-lg">Your AI-powered knowledge engine — what do you want to explore?</p>
@@ -100,84 +212,30 @@ function IdleScreen({ isFirstVisit, inputValue, onInputChange, onSubmit, mode, o
           )}
         </div>
 
-        {/* First visit: cards ABOVE search bar */}
-        {isFirstVisit && !isTyping && (
-          <div className="mb-6 animate-fade-in">
-            <SuggestionCards
-              suggestions={idleSuggestions}
-              onSelect={onSuggestionSelect}
-              label="Try asking:"
-            />
-            <div className="flex items-center gap-4 my-6">
-              <div className="flex-1 h-px bg-k-border" />
-              <span className="text-xs text-k-muted">or</span>
-              <div className="flex-1 h-px bg-k-border" />
-            </div>
-          </div>
-        )}
+        <SearchBar value={inputValue} onChange={onInputChange} onSubmit={onSubmit} mode={mode} onModeChange={onModeChange} disabled={false} />
 
-        {/* Typing state: "You might also ask" ABOVE bar for first visit */}
-        {isFirstVisit && isTyping && (
-          <div className="mb-4 animate-fade-in">
-            <p className="text-xs text-k-muted mb-3">You might also ask:</p>
-            <div className="space-y-1">
-              {typingSuggestions.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => onSuggestionSelect(s)}
-                  className="block w-full text-left text-sm text-k-muted hover:text-k-cyan transition-colors py-1.5 px-2 rounded-lg hover:bg-k-card"
-                >
-                  → {s}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Search bar */}
-        <SearchBar
-          value={inputValue}
-          onChange={onInputChange}
-          onSubmit={onSubmit}
-          mode={mode}
-          onModeChange={onModeChange}
-          disabled={false}
-        />
-
-        {/* Modality line — always subtle below bar */}
         <p className="text-xs text-k-muted/60 mt-4 text-center">
           Ask about anything — videos, documents, data, images and more.
         </p>
 
-        {/* Returning user: cards BELOW search bar */}
-        {!isFirstVisit && !isTyping && (
+        {!isTyping && (
           <div className="mt-8 animate-fade-in">
-            <SuggestionCards
-              suggestions={idleSuggestions}
-              onSelect={onSuggestionSelect}
-              label="Try asking:"
-            />
+            <SuggestionCards suggestions={idleSuggestions} onSelect={onSuggestionSelect} label="Try asking:" />
           </div>
         )}
 
-        {/* Returning user typing: "You might also ask" BELOW bar */}
-        {!isFirstVisit && isTyping && (
+        {isTyping && (
           <div className="mt-4 animate-fade-in">
             <p className="text-xs text-k-muted mb-3">You might also ask:</p>
             <div className="space-y-1">
               {typingSuggestions.map((s, i) => (
-                <button
-                  key={i}
-                  onClick={() => onSuggestionSelect(s)}
-                  className="block w-full text-left text-sm text-k-muted hover:text-k-cyan transition-colors py-1.5 px-2 rounded-lg hover:bg-k-card"
-                >
+                <button key={i} onClick={() => onSuggestionSelect(s)} className="block w-full text-left text-sm text-k-muted hover:text-k-cyan transition-colors py-1.5 px-2 rounded-lg hover:bg-k-card">
                   → {s}
                 </button>
               ))}
             </div>
           </div>
         )}
-
       </div>
     </div>
   )
@@ -192,50 +250,23 @@ function ConversationScreen({ conversations, inputValue, onInputChange, onSubmit
   }, [conversations, isThinking])
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Sticky top bar */}
-      <div className="sticky top-0 z-20 bg-k-bg/95 backdrop-blur border-b border-k-border px-6 py-4">
+    <div className="flex flex-col min-h-[calc(100vh-3.5rem)]">
+      <div className="sticky top-14 z-20 bg-k-bg/95 backdrop-blur border-b border-k-border px-6 py-4">
         <div className="max-w-2xl mx-auto">
-          <SearchBar
-            value={inputValue}
-            onChange={onInputChange}
-            onSubmit={onSubmit}
-            mode={mode}
-            onModeChange={onModeChange}
-            disabled={isThinking}
-          />
+          <SearchBar value={inputValue} onChange={onInputChange} onSubmit={onSubmit} mode={mode} onModeChange={onModeChange} disabled={isThinking} />
         </div>
       </div>
-
-      {/* Conversation body */}
       <div className="flex-1 px-6 py-8">
         <div className="max-w-2xl mx-auto space-y-8">
-
-          {/* Past Q&As */}
           {conversations.map((conv, i) => (
-            <AnswerBlock
-              key={conv.id}
-              conversation={conv}
-              isLatest={i === conversations.length - 1 && !isThinking}
-            />
+            <AnswerBlock key={conv.id} conversation={conv} isLatest={i === conversations.length - 1 && !isThinking} />
           ))}
-
-          {/* Thinking state */}
-          {isThinking && (
-            <ThinkingState mode={thinkingMode} onComplete={onThinkingComplete} />
-          )}
-
-          {/* Latest suggestion cards — only after last answer, not during thinking */}
+          {isThinking && <ThinkingState mode={thinkingMode} onComplete={onThinkingComplete} />}
           {!isThinking && conversations.length > 0 && latestSuggestions.length > 0 && (
             <div className="animate-fade-in">
-              <SuggestionCards
-                suggestions={latestSuggestions}
-                onSelect={onSuggestionSelect}
-                label="You might also ask:"
-              />
+              <SuggestionCards suggestions={latestSuggestions} onSelect={onSuggestionSelect} label="You might also ask:" />
             </div>
           )}
-
           <div ref={bottomRef} />
         </div>
       </div>
@@ -245,16 +276,31 @@ function ConversationScreen({ conversations, inputValue, onInputChange, onSubmit
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [isFirstVisit, setIsFirstVisit]     = useState(true)
-  const [hasStarted, setHasStarted]         = useState(false) // false = idle, true = conversation
-  const [inputValue, setInputValue]         = useState('')
-  const [mode, setMode]                     = useState('quick')
-  const [conversations, setConversations]   = useState([])
-  const [isThinking, setIsThinking]         = useState(false)
-  const [thinkingMode, setThinkingMode]     = useState('quick')
-  const [pendingQuestion, setPendingQuestion] = useState('')
-  const [askedQuestions, setAskedQuestions] = useState(new Set())
+  const [isSignedIn, setIsSignedIn]             = useState(false)
+  const [view, setView]                         = useState('myChats') // 'myChats' | 'projects'
+  const [activeProjectId, setActiveProjectId]   = useState(null)
+  const [isFirstVisit, setIsFirstVisit]         = useState(true)
+  const [hasStarted, setHasStarted]             = useState(false)
+  const [inputValue, setInputValue]             = useState('')
+  const [mode, setMode]                         = useState('quick')
+  const [conversations, setConversations]       = useState([])
+  const [isThinking, setIsThinking]             = useState(false)
+  const [thinkingMode, setThinkingMode]         = useState('quick')
+  const [pendingQuestion, setPendingQuestion]   = useState('')
+  const [askedQuestions, setAskedQuestions]     = useState(new Set())
   const [latestSuggestions, setLatestSuggestions] = useState([])
+  const [membersProject, setMembersProject]     = useState(null)
+
+  const activeProject = MOCK_PROJECTS.find(p => p.id === activeProjectId) || null
+
+  const handleSignIn  = () => setIsSignedIn(true)
+  const handleSignOut = () => { setIsSignedIn(false); handleReset() }
+
+  const handleViewChange = (newView) => {
+    setView(newView)
+    setActiveProjectId(null)
+    handleReset()
+  }
 
   const handleSubmit = (query) => {
     if (!query.trim() || isThinking) return
@@ -263,7 +309,7 @@ export default function App() {
     setPendingQuestion(query)
     setThinkingMode(mode)
     setIsThinking(true)
-    setLatestSuggestions([]) // clear old cards immediately
+    setLatestSuggestions([])
     setAskedQuestions(prev => new Set([...prev, query.toLowerCase().trim()]))
   }
 
@@ -281,16 +327,8 @@ export default function App() {
     }
     setConversations(prev => [...prev, newConv])
     setIsThinking(false)
-
-    // Set smart suggestions (filter already asked)
-    const newSuggestions = result.suggestions.filter(
-      s => !askedQuestions.has(s.toLowerCase().trim())
-    )
+    const newSuggestions = result.suggestions.filter(s => !askedQuestions.has(s.toLowerCase().trim()))
     setLatestSuggestions(newSuggestions)
-  }
-
-  const handleSuggestionSelect = (s) => {
-    handleSubmit(s)
   }
 
   const handleReset = () => {
@@ -302,69 +340,120 @@ export default function App() {
     setAskedQuestions(new Set())
   }
 
+  // ── Sign-in ──
+  if (!isSignedIn) return <SignIn onSignIn={handleSignIn} />
+
+  const hasSidebar = true // always show sidebar
+
   return (
     <div className="min-h-screen bg-k-bg text-k-text font-sans">
 
-      {/* Nav */}
+      {/* ── Top Nav ── */}
       <nav className="fixed top-0 left-0 right-0 z-30 bg-k-nav border-b border-k-border px-6 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button onClick={handleReset} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-k-cyan to-k-teal flex items-center justify-center">
-              <span className="text-k-bg text-sm font-bold">A</span>
-            </div>
-            <span className="font-semibold text-k-text">AIntropy</span>
-            <span className="text-k-muted text-sm font-normal ml-1">Kurious</span>
-          </button>
+
+        {/* Left: logo + nav links */}
+        <div className="flex items-center gap-6">
+          <NavLogo onClick={handleReset} />
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => handleViewChange('myChats')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                view === 'myChats' ? 'text-k-text bg-k-card' : 'text-k-muted hover:text-k-text hover:bg-k-card/50'
+              }`}
+            >
+              My Chats
+            </button>
+            <button
+              onClick={() => handleViewChange('projects')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                view === 'projects' ? 'text-k-text bg-k-card' : 'text-k-muted hover:text-k-text hover:bg-k-card/50'
+              }`}
+            >
+              Projects
+            </button>
+          </div>
         </div>
 
-        {/* Demo toggle */}
+        {/* Right: demo toggle + org + profile */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-k-card border border-k-border rounded-lg px-3 py-1.5">
-            <span className="text-xs text-k-muted">Demo:</span>
+          <span className="text-xs text-k-muted/40 hidden sm:block">(for demo only)</span>
+          <div className="flex items-center gap-1 bg-k-card border border-k-border rounded-lg px-2 py-1">
             <button
-              onClick={() => { setIsFirstVisit(true); handleReset() }}
+              onClick={() => setIsFirstVisit(true)}
               className={`text-xs px-2 py-0.5 rounded transition-colors ${isFirstVisit ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}
             >
               First Visit
             </button>
             <button
-              onClick={() => { setIsFirstVisit(false); handleReset() }}
+              onClick={() => setIsFirstVisit(false)}
               className={`text-xs px-2 py-0.5 rounded transition-colors ${!isFirstVisit ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}
             >
               Returning
             </button>
           </div>
-          <div className="text-xs text-k-muted hidden sm:block">NJ Open Data · 57M docs · 23 agencies</div>
+          <span className="text-xs text-k-muted hidden sm:block">Organization's Name.INC</span>
+          <ProfileMenu onSignOut={handleSignOut} />
         </div>
       </nav>
 
-      {/* Main content */}
-      <div className="pt-14">
-        {!hasStarted ? (
-          <IdleScreen
-            isFirstVisit={isFirstVisit}
-            inputValue={inputValue}
-            onInputChange={setInputValue}
-            onSubmit={handleSubmit}
-            mode={mode}
-            onModeChange={setMode}
-            onSuggestionSelect={handleSuggestionSelect}
-          />
-        ) : (
-          <ConversationScreen
-            conversations={conversations}
-            inputValue={inputValue}
-            onInputChange={setInputValue}
-            onSubmit={handleSubmit}
-            mode={mode}
-            onModeChange={setMode}
-            isThinking={isThinking}
-            thinkingMode={thinkingMode}
-            onThinkingComplete={handleThinkingComplete}
-            latestSuggestions={latestSuggestions}
-            onSuggestionSelect={handleSuggestionSelect}
+      {/* ── Layout: sidebar + content ── */}
+      <div className="pt-14 flex">
+
+        {/* Left sidebar */}
+        {view === 'myChats' && (
+          <ChatHistorySidebar
+            activeChatId={null}
+            onChatSelect={handleReset}
+            onNewChat={handleReset}
           />
         )}
+        {view === 'projects' && (
+          <ProjectsSidebar
+            activeProjectId={activeProjectId}
+            onProjectSelect={(id) => { setActiveProjectId(id); handleReset() }}
+            onNewProject={() => {}}
+          />
+        )}
+
+        {/* Center content */}
+        <div className="flex-1 ml-64">
+          {/* Project header */}
+          {view === 'projects' && activeProject && !hasStarted && (
+            <div className="max-w-2xl mx-auto px-6 pt-8">
+              <ProjectHeader
+                project={activeProject}
+                onManageMembers={() => setMembersProject(activeProject)}
+              />
+            </div>
+          )}
+
+          {!hasStarted ? (
+            <IdleScreen
+              isFirstVisit={isFirstVisit}
+              inputValue={inputValue}
+              onInputChange={setInputValue}
+              onSubmit={handleSubmit}
+              mode={mode}
+              onModeChange={setMode}
+              onSuggestionSelect={handleSubmit}
+              projectName={activeProject?.name}
+            />
+          ) : (
+            <ConversationScreen
+              conversations={conversations}
+              inputValue={inputValue}
+              onInputChange={setInputValue}
+              onSubmit={handleSubmit}
+              mode={mode}
+              onModeChange={setMode}
+              isThinking={isThinking}
+              thinkingMode={thinkingMode}
+              onThinkingComplete={handleThinkingComplete}
+              latestSuggestions={latestSuggestions}
+              onSuggestionSelect={handleSubmit}
+            />
+          )}
+        </div>
       </div>
     </div>
   )
