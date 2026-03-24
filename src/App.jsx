@@ -416,11 +416,13 @@ export default function App() {
               <button onClick={() => setIsFirstVisit(true)} className={`text-xs px-2 py-0.5 rounded transition-colors ${isFirstVisit ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}>First Visit</button>
               <button onClick={() => setIsFirstVisit(false)} className={`text-xs px-2 py-0.5 rounded transition-colors ${!isFirstVisit ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}>Returning</button>
             </div>
-            <div className="flex items-center gap-1 bg-k-card border border-k-border rounded-lg px-2 py-1">
-              {['Admin', 'Contributor', 'Viewer'].map(r => (
-                <button key={r} onClick={() => setDemoRole(r)} className={`text-xs px-2 py-0.5 rounded transition-colors ${demoRole === r ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}>{r}</button>
-              ))}
-            </div>
+            {view === 'projects' && (
+              <div className="flex items-center gap-1 bg-k-card border border-k-border rounded-lg px-2 py-1">
+                {['Admin', 'Contributor', 'Viewer'].map(r => (
+                  <button key={r} onClick={() => setDemoRole(r)} className={`text-xs px-2 py-0.5 rounded transition-colors ${demoRole === r ? 'bg-k-cyan text-k-bg font-medium' : 'text-k-muted hover:text-k-text'}`}>{r}</button>
+                ))}
+              </div>
+            )}
           </div>
           <span className="text-xs text-k-muted hidden sm:block">Organization's Name.INC</span>
           <ProfileMenu onSignOut={handleSignOut} theme={theme} onThemeChange={setTheme} />
