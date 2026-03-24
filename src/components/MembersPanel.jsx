@@ -26,7 +26,9 @@ export default function MembersPanel({ project, onClose }) {
   const [addEmail, setAddEmail] = useState('')
   const [addRole, setAddRole] = useState('Contributor')
   const [addError, setAddError] = useState('')
-  const currentUserIsAdmin = true // prototype: current user (Kunal) is always Admin
+  const [demoRole, setDemoRole] = useState('Admin') // demo switcher
+
+  const isAdmin = demoRole === 'Admin'
 
   const handleAdd = () => {
     if (!addEmail.trim()) { setAddError('Please enter an email address.'); return }
@@ -57,7 +59,7 @@ export default function MembersPanel({ project, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-k-border">
           <div>
-            <h3 className="font-semibold text-k-text">Manage Members</h3>
+            <h3 className="font-semibold text-k-text">Members</h3>
             <p className="text-xs text-k-muted mt-0.5">{project.name} · {members.length} member{members.length !== 1 ? 's' : ''}</p>
           </div>
           <button onClick={onClose} className="text-k-muted hover:text-k-text transition-colors p-1">
@@ -67,8 +69,39 @@ export default function MembersPanel({ project, onClose }) {
           </button>
         </div>
 
+        {/* Demo role switcher */}
+        <div className="flex items-center gap-3 px-6 py-2.5 bg-k-bg/60 border-b border-k-border">
+          <span className="text-xs text-k-muted/50">Viewing as:</span>
+          <div className="flex items-center gap-1">
+            {['Admin', 'Contributor', 'Viewer'].map(r => (
+              <button
+                key={r}
+                onClick={() => setDemoRole(r)}
+                className={`text-xs px-2.5 py-1 rounded-lg transition-colors font-medium ${
+                  demoRole === r ? 'bg-k-cyan text-k-bg' : 'text-k-muted hover:text-k-text hover:bg-k-card'
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+          <span className="text-xs text-k-muted/40 ml-auto">(for demo only)</span>
+        </div>
+
+        {/* Non-admin notice */}
+        {!isAdmin && (
+          <div className="flex items-center gap-2 px-6 py-3 bg-k-bg/40 border-b border-k-border">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" className="text-k-muted flex-shrink-0">
+              <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2"/>
+              <path d="M7 4.5v3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+              <circle cx="7" cy="9.5" r="0.6" fill="currentColor"/>
+            </svg>
+            <p className="text-xs text-k-muted">Only Admins can add or remove members.</p>
+          </div>
+        )}
+
         {/* Members list */}
-        <div className="px-6 py-4 max-h-64 overflow-y-auto space-y-3">
+        <div className="px-6 py-4 max-h-60 overflow-y-auto space-y-3">
           {members.map(member => (
             <div key={member.id} className="flex items-center gap-3">
               {/* Avatar */}
@@ -83,8 +116,8 @@ export default function MembersPanel({ project, onClose }) {
                 </p>
                 <p className="text-xs text-k-muted truncate">{member.email}</p>
               </div>
-              {/* Role */}
-              {currentUserIsAdmin && !member.isOwner ? (
+              {/* Role — editable for Admin, badge for others */}
+              {isAdmin && !member.isOwner ? (
                 <select
                   value={member.role}
                   onChange={e => handleRoleChange(member.id, e.target.value)}
@@ -95,8 +128,8 @@ export default function MembersPanel({ project, onClose }) {
               ) : (
                 <RoleBadge role={member.role} />
               )}
-              {/* Remove */}
-              {currentUserIsAdmin && !member.isOwner && (
+              {/* Remove — Admin only */}
+              {isAdmin && !member.isOwner && (
                 <button
                   onClick={() => handleRemove(member.id)}
                   className="text-k-muted hover:text-k-error transition-colors p-1 flex-shrink-0"
@@ -120,8 +153,8 @@ export default function MembersPanel({ project, onClose }) {
           ))}
         </div>
 
-        {/* Add member */}
-        {currentUserIsAdmin && (
+        {/* Add member — Admin only */}
+        {isAdmin && (
           <div className="px-6 py-4 border-t border-k-border">
             <p className="text-xs font-medium text-k-muted uppercase tracking-wider mb-3">Add Member</p>
             <div className="flex gap-2">
